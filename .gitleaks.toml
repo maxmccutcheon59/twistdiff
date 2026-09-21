@@ -1,0 +1,8 @@
+title = "twistdiff"
+
+[allowlist]
+description = "Tests, examples, and docs only"
+paths = [
+  '''tests/.*''',
+  '''examples/.*''',
+]
