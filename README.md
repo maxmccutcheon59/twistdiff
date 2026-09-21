@@ -1,19 +1,22 @@
 # twistdiff
 
-Lightweight **ODE integration** + **PID control** demos in pure Python (CPU-only).
+Lightweight **ODE integration**, **LTI state-space**, and **PID control** demos in pure Python (CPU-only).
 
-Educational / research portfolio library — not industrial control software.
+Educational / research portfolio library — honest numerical tooling, **not** industrial control software and **not** a fake company product.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
 
 ## Features
 
 - Fixed-step **Euler** and **RK4** integrators (`twistdiff.integrate`)
 - Discrete **PID** with output limits and simple anti-windup (`twistdiff.PID`)
-- Demo plants: **damped harmonic oscillator**, **1-D cruise control**
+- Demo plants: **damped harmonic oscillator**, **1-D cruise control**, **second-order state-space** (`second_order_plant`)
+- **Step-response metrics**: rise time, overshoot %, settling time (`step_response_metrics`)
 - CLI entry point: `twistdiff`
 - Optional **matplotlib** plots (`pip install 'twistdiff[plot]'`)
 - **No GPU** dependencies
+- Interview write-up: [`WRITEUP.md`](WRITEUP.md)
 
 ## Install
 
@@ -27,6 +30,15 @@ pip install -e ".[plot]"         # add matplotlib
 Requires Python **3.10+**.
 
 ## Quick start (library)
+
+```python
+from twistdiff import second_order_plant, step_response_metrics
+
+plant = second_order_plant(wn=2.0, zeta=0.3, gain=1.0)
+t, y, x = plant.simulate_step(1.0, t_end=20.0, dt=0.01)
+m = step_response_metrics(t, y[:, 0], y_final=1.0)
+print(m.rise_time, m.overshoot_pct, m.settling_time)
+```
 
 ```python
 from twistdiff import DampedHarmonicOscillator, integrate
@@ -53,6 +65,7 @@ print(v)  # ~ setpoint
 ```bash
 twistdiff oscillator --plot examples/oscillator.png
 twistdiff cruise --plot examples/cruise.png
+twistdiff second-order --zeta 0.3 --plot examples/second_order.png
 twistdiff --version
 ```
 
@@ -68,6 +81,10 @@ Regenerate with the commands above (also produced by `examples/generate_plots.py
 
 ![Cruise](examples/cruise.png)
 
+### Second-order plant (state-space step)
+
+![Second-order](examples/second_order.png)
+
 ## API surface
 
 | Symbol | Module | Role |
@@ -77,6 +94,9 @@ Regenerate with the commands above (also produced by `examples/generate_plots.py
 | `PID` | `twistdiff.pid` | Discrete PID controller |
 | `DampedHarmonicOscillator` | `twistdiff.models` | `m x'' + c x' + k x = u(t)` |
 | `CruiseControl` | `twistdiff.models` | `m v' = u - b v` |
+| `StateSpace` | `twistdiff.statespace` | Continuous LTI `ẋ=Ax+Bu`, `y=Cx+Du` |
+| `second_order_plant` | `twistdiff.statespace` | Classic 2nd-order TF → state-space |
+| `step_response_metrics` | `twistdiff.metrics` | Rise / overshoot / settling |
 | `save_trajectory_plot` | `twistdiff.plotting` | Optional matplotlib helper |
 
 ## Tests
@@ -93,6 +113,7 @@ src/twistdiff/   # library + CLI
 tests/           # pytest
 examples/        # PNG demos + plot generator
 ci/              # GitHub Actions templates (see note below)
+WRITEUP.md       # control intuition ↔ code
 SECURITY.md
 COMPLIANCE_NOTES.md
 ```

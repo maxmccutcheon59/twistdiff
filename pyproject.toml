@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "twistdiff"
-version = "0.1.0"
-description = "Lightweight ODE integration and PID control demos (CPU-only, educational)"
+version = "0.2.0"
+description = "Lightweight ODE integration, LTI state-space, and PID control demos (CPU-only, educational)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Max McCutcheon", email = "MaxMcCutcheon1@outlook.com" }]
-keywords = ["ode", "pid", "control", "simulation", "numerical", "education"]
+keywords = ["ode", "pid", "control", "state-space", "simulation", "numerical", "education"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",

@@ -22,6 +22,18 @@ def test_oscillator_rejects_bad_mass():
         DampedHarmonicOscillator(mass=0.0)
 
 
+def test_oscillator_rejects_negative_damping():
+    with pytest.raises(ValueError):
+        DampedHarmonicOscillator(damping=-0.1)
+
+
+def test_forced_oscillator_moves():
+    plant = DampedHarmonicOscillator(mass=1.0, damping=1.0, stiffness=1.0)
+    traj = integrate(plant.rhs(force=lambda t: 1.0), [0.0, 0.0], (0.0, 30.0), dt=0.01)
+    # Steady offset toward u/k = 1
+    assert traj.y[-1, 0] == pytest.approx(1.0, abs=0.05)
+
+
 def test_cruise_pid_reaches_setpoint():
     plant = CruiseControl(mass=1000.0, drag=50.0)
     pid = PID(kp=800.0, ki=40.0, kd=50.0, setpoint=25.0, output_limits=(0.0, 5000.0))
@@ -36,3 +48,8 @@ def test_cruise_pid_reaches_setpoint():
 def test_cruise_accel():
     plant = CruiseControl(mass=1000.0, drag=0.0)
     assert plant.accel(0.0, 1000.0) == pytest.approx(1.0)
+
+
+def test_cruise_rejects_bad_drag():
+    with pytest.raises(ValueError):
+        CruiseControl(drag=-1.0)

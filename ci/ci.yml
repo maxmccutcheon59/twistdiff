@@ -37,6 +37,7 @@ jobs:
         run: |
           twistdiff oscillator --t-end 2 --plot /tmp/osc.png
           twistdiff cruise --t-end 5 --plot /tmp/cruise.png
+          twistdiff second-order --t-end 5 --plot /tmp/so.png
 
   secret-scan:
     runs-on: ubuntu-latest

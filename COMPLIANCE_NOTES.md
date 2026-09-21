@@ -5,10 +5,11 @@
 
 ## Product posture
 
-- **Educational / research numerical library + CLI** for ODE integration and simple PID demos.
+- **Educational / research numerical library + CLI** for ODE integration, LTI state-space, step-response metrics, and simple PID demos.
 - **No SaaS, accounts, telemetry, cookies, or intentional PII collection.**
 - **No GPU / cloud training stack** — CPU-only `numpy` (+ optional `matplotlib`).
 - Portfolio project for Max McCutcheon (`@maxmccutcheon59`).
+- Interview write-up in `WRITEUP.md` (honest edu/pro; not a commercial product claim).
 
 ## Data inventory
 
