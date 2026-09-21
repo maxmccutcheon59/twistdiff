@@ -7,8 +7,9 @@ from twistdiff.models import CruiseControl, DampedHarmonicOscillator
 from twistdiff.ode import Trajectory, integrate
 from twistdiff.pid import PID
 from twistdiff.statespace import StateSpace, second_order_plant
+from twistdiff.sweep import DampingSweepRow, damping_sweep
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = [
     "PID",
     "Trajectory",
@@ -19,5 +20,7 @@ __all__ = [
     "second_order_plant",
     "StepResponseMetrics",
     "step_response_metrics",
+    "DampingSweepRow",
+    "damping_sweep",
     "__version__",
 ]

@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-09-21
+
+### Added
+
+- **Root-locus-free damping sweep**: `damping_sweep` / `DampingSweepRow` (`twistdiff.sweep`)
+  — step-response metrics vs ζ for a fixed-ωn second-order plant (time domain only).
+- CLI: `twistdiff damping-sweep` (table + optional metrics-vs-ζ plot).
+- WRITEUP cross-link to SimReach pure-Python `recorded_run` (vision loop sibling).
+- pytest coverage for sweep helpers + CLI smoke.
+
+### Notes
+
+- Explicitly **not** a root-locus / Routh / Bode tool — honest edu parameter study.
+- Still CPU-only; educational / research numerical tooling only.
+
 ## [0.2.0] - 2026-09-21
 
 ### Added

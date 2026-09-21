@@ -5,7 +5,7 @@ Lightweight **ODE integration**, **LTI state-space**, and **PID control** demos 
 Educational / research portfolio library — honest numerical tooling, **not** industrial control software and **not** a fake company product.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
 
 ## Features
 
@@ -13,6 +13,7 @@ Educational / research portfolio library — honest numerical tooling, **not** i
 - Discrete **PID** with output limits and simple anti-windup (`twistdiff.PID`)
 - Demo plants: **damped harmonic oscillator**, **1-D cruise control**, **second-order state-space** (`second_order_plant`)
 - **Step-response metrics**: rise time, overshoot %, settling time (`step_response_metrics`)
+- **Damping sweep** (root-locus-free): metrics vs ζ (`damping_sweep`)
 - CLI entry point: `twistdiff`
 - Optional **matplotlib** plots (`pip install 'twistdiff[plot]'`)
 - **No GPU** dependencies
@@ -41,6 +42,14 @@ print(m.rise_time, m.overshoot_pct, m.settling_time)
 ```
 
 ```python
+from twistdiff import damping_sweep
+
+rows = damping_sweep([0.2, 0.5, 1.0, 1.5], wn=2.0)
+for row in rows:
+    print(row.zeta, row.metrics.overshoot_pct, row.metrics.settling_time)
+```
+
+```python
 from twistdiff import DampedHarmonicOscillator, integrate
 
 plant = DampedHarmonicOscillator(mass=1.0, damping=0.2, stiffness=4.0)
@@ -66,6 +75,7 @@ print(v)  # ~ setpoint
 twistdiff oscillator --plot examples/oscillator.png
 twistdiff cruise --plot examples/cruise.png
 twistdiff second-order --zeta 0.3 --plot examples/second_order.png
+twistdiff damping-sweep --zetas 0.2,0.5,0.7,1.0,1.5 --plot examples/damping_sweep.png
 twistdiff --version
 ```
 
@@ -85,6 +95,10 @@ Regenerate with the commands above (also produced by `examples/generate_plots.py
 
 ![Second-order](examples/second_order.png)
 
+### Damping sweep (metrics vs ζ — not a root locus)
+
+![Damping sweep](examples/damping_sweep.png)
+
 ## API surface
 
 | Symbol | Module | Role |
@@ -97,6 +111,7 @@ Regenerate with the commands above (also produced by `examples/generate_plots.py
 | `StateSpace` | `twistdiff.statespace` | Continuous LTI `ẋ=Ax+Bu`, `y=Cx+Du` |
 | `second_order_plant` | `twistdiff.statespace` | Classic 2nd-order TF → state-space |
 | `step_response_metrics` | `twistdiff.metrics` | Rise / overshoot / settling |
+| `damping_sweep` | `twistdiff.sweep` | ζ sweep → step metrics (not root locus) |
 | `save_trajectory_plot` | `twistdiff.plotting` | Optional matplotlib helper |
 
 ## Tests

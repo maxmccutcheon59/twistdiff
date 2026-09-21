@@ -1,4 +1,4 @@
-# WRITEUP — twistdiff (v0.2.0)
+# WRITEUP — twistdiff (v0.2.1)
 
 Interview-oriented notes: how classical control intuition maps to this code.
 **Honest edu/pro numerical tooling** — not a fake fusion company, not certified
@@ -12,6 +12,7 @@ industrial control software, not safety-rated for real plants or vehicles.
 | Feedback | Discrete parallel PID + clamp / anti-windup | `twistdiff/pid.py` → `PID` |
 | Plants | Oscillator, 1-D cruise, LTI state-space | `twistdiff/models.py`, `statespace.py` |
 | Specs | Rise / overshoot / settling | `twistdiff/metrics.py` → `step_response_metrics` |
+| Sweep | ζ → metrics (no root locus) | `twistdiff/sweep.py` → `damping_sweep` |
 | Demo CLI | Reproduce plots + print metrics | `twistdiff/cli.py` |
 
 CPU-only; required dep is **numpy**. **matplotlib** is optional (`[plot]`).
@@ -87,6 +88,35 @@ Cruise CLI now prints the same metrics helper so you can talk about tuning
 Both are **fixed-step** — fine for demos; production solvers often use adaptive
 step / stiff methods (not claimed here).
 
+
+### 5. Damping sweep (root-locus-free)
+
+Classical courses often jump to **root locus** (pole paths as a gain varies).
+This repo deliberately does **not** draw root loci. Instead, `damping_sweep`
+fixes ωn and steps ζ through underdamped → critically → overdamped, reporting
+the same time-domain metrics as §2.
+
+| What you see | What it is **not** |
+|--------------|--------------------|
+| Overshoot % falling as ζ ↑ | A root-locus gain plot |
+| Settling / rise shifting with ζ | Routh–Hurwitz certificate |
+| Optional PNG of metrics vs ζ | A Bode diagram |
+
+Try: `twistdiff damping-sweep --zetas 0.2,0.5,0.7,1.0,1.5`
+
+### 6. Sibling demo: SimReach recorded run (vision loop)
+
+For a portfolio neighbor that closes a **vision** loop in pure Python (detector →
+image-plane error → clamped twist, with lost-target e-stop) **without Gazebo /
+ROS / Docker**, see SimReach’s recorded run:
+
+- Repo: https://github.com/maxmccutcheon59/simreach
+- Section: [Recorded run (pure Python demo)](https://github.com/maxmccutcheon59/simreach#recorded-run-pure-python-demo)
+- Entry: `python scripts/recorded_run.py --output examples/last_run.jsonl`
+
+That path is educational robotics (IBVS-lite), not certified robot safety —
+same honest-edu posture as twistdiff.
+
 ## Reproducibility
 
 ```bash
@@ -94,6 +124,7 @@ pip install -e ".[dev]"
 pytest -q
 ruff check src tests
 twistdiff second-order --zeta 0.3 --plot examples/second_order.png
+twistdiff damping-sweep --plot examples/damping_sweep.png
 twistdiff cruise --plot examples/cruise.png
 ```
 
@@ -103,7 +134,7 @@ twistdiff cruise --plot examples/cruise.png
 - Not IEC 61508 / ISO 26262 / DO-178 certified. Do not close the loop on
   safety-critical hardware without independent engineering review.
 - Metrics assume a clean SISO step-like transient; noise, MIMO, and nonlinear
-  constraints are out of scope in v0.2.0.
+  constraints are out of scope in v0.2.x. No Bode / root-locus claims.
 - No GPU, no network service, no telemetry, no PII collection.
 
 ## Author

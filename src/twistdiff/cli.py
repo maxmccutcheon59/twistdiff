@@ -14,6 +14,7 @@ from twistdiff.models import CruiseControl, DampedHarmonicOscillator
 from twistdiff.ode import integrate
 from twistdiff.pid import PID
 from twistdiff.statespace import second_order_plant
+from twistdiff.sweep import damping_sweep, parse_zeta_list
 
 
 def _cmd_oscillator(args: argparse.Namespace) -> int:
@@ -132,6 +133,65 @@ def _cmd_second_order(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def _cmd_damping_sweep(args: argparse.Namespace) -> int:
+    """Root-locus-free ζ sweep: time-domain metrics only (honest edu)."""
+    zetas = parse_zeta_list(args.zetas)
+    rows = damping_sweep(
+        zetas,
+        wn=args.wn,
+        gain=args.gain,
+        amplitude=args.amplitude,
+        t_end=args.t_end,
+        dt=args.dt,
+        method=args.method,
+    )
+    print(
+        f"wn={args.wn:.4f}  gain={args.gain:.4f}  amplitude={args.amplitude:.4f}  "
+        f"n={len(rows)}  (damping sweep — not a root locus)"
+    )
+    print(f"{'zeta':>8}  {'rise':>10}  {'overshoot%':>10}  {'settling':>10}  {'peak':>10}")
+    for row in rows:
+        m = row.metrics
+        print(
+            f"{row.zeta:8.4f}  {_fmt(m.rise_time):>10}  {m.overshoot_pct:10.2f}  "
+            f"{_fmt(m.settling_time):>10}  {m.peak_value:10.6f}"
+        )
+    if args.plot:
+        from twistdiff.plotting import save_series_plot
+
+        out = Path(args.plot)
+        zz = np.array([r.zeta for r in rows], dtype=float)
+        # Metrics vs ζ — use zeta as the independent axis (not time).
+        overshoot = np.array([r.metrics.overshoot_pct for r in rows], dtype=float)
+        # None settling → nan so matplotlib gaps honestly
+        settling = np.array(
+            [
+                np.nan if r.metrics.settling_time is None else r.metrics.settling_time
+                for r in rows
+            ],
+            dtype=float,
+        )
+        rise = np.array(
+            [np.nan if r.metrics.rise_time is None else r.metrics.rise_time for r in rows],
+            dtype=float,
+        )
+        save_series_plot(
+            zz,
+            {
+                "overshoot_%": overshoot,
+                "settling_time": settling,
+                "rise_time": rise,
+            },
+            out,
+            title=f"Damping sweep (ωn={args.wn}) — not a root locus",
+            xlabel="ζ",
+            ylabel="metric",
+        )
+        print(f"wrote {out}")
+    return 0
+
+
 def _fmt(v: float | None) -> str:
     if v is None:
         return "None"
@@ -186,6 +246,30 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--method", choices=["rk4", "euler"], default="rk4")
     s.add_argument("--plot", type=str, default="", help="Optional PNG output path")
     s.set_defaults(func=_cmd_second_order)
+
+    d = sub.add_parser(
+        "damping-sweep",
+        help="Root-locus-free ζ sweep: step metrics vs damping (honest edu)",
+    )
+    d.add_argument(
+        "--zetas",
+        type=str,
+        default="0.2,0.5,0.7,1.0,1.5",
+        help="Comma-separated damping ratios (default: under→overdamped set)",
+    )
+    d.add_argument("--wn", type=float, default=2.0, help="Natural frequency ωn > 0")
+    d.add_argument("--gain", type=float, default=1.0, help="DC gain of G(s)")
+    d.add_argument("--amplitude", type=float, default=1.0, help="Step input amplitude")
+    d.add_argument("--t-end", type=float, default=25.0)
+    d.add_argument("--dt", type=float, default=0.01)
+    d.add_argument("--method", choices=["rk4", "euler"], default="rk4")
+    d.add_argument(
+        "--plot",
+        type=str,
+        default="",
+        help="Optional PNG: metrics vs ζ (not a root-locus diagram)",
+    )
+    d.set_defaults(func=_cmd_damping_sweep)
 
     return p
 

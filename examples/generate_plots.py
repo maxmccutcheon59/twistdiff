@@ -14,6 +14,7 @@ def main_plots() -> None:
     main(["oscillator", "--plot", str(ROOT / "oscillator.png")])
     main(["cruise", "--plot", str(ROOT / "cruise.png")])
     main(["second-order", "--zeta", "0.3", "--plot", str(ROOT / "second_order.png")])
+    main(["damping-sweep", "--plot", str(ROOT / "damping_sweep.png")])
 
 
 if __name__ == "__main__":
