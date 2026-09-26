@@ -2,7 +2,7 @@
 
 Lightweight **ODE integration**, **LTI state-space**, and **PID control** demos in pure Python (CPU-only).
 
-Educational / research portfolio library — honest numerical tooling, **not** industrial control software and **not** a fake company product.
+An educational library for numerical integration and control. Not intended for industrial control systems.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
