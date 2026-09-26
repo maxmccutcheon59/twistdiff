@@ -127,20 +127,14 @@ ruff check src tests
 src/twistdiff/   # library + CLI
 tests/           # pytest
 examples/        # PNG demos + plot generator
-ci/              # GitHub Actions templates (see note below)
 WRITEUP.md       # control intuition ↔ code
 SECURITY.md
 COMPLIANCE_NOTES.md
 ```
 
-## CI note
+## CI
 
-Workflow YAML lives under `ci/` because some push credentials lack the GitHub OAuth `workflow` scope. Copy to `.github/workflows/` when that scope is available:
-
-```bash
-mkdir -p .github/workflows
-cp ci/ci.yml ci/security-ci.yml .github/workflows/
-```
+Every push runs Ruff, pytest on Python 3.10, 3.12, and 3.13, the CLI smoke plots, a gitleaks secret scan, and pip-audit. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Security & compliance
 
