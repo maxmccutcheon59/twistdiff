@@ -4,6 +4,7 @@ Lightweight **ODE integration**, **LTI state-space**, and **PID control** demos 
 
 An educational library for numerical integration and control. Not intended for industrial control systems.
 
+[![CI](https://github.com/maxmccutcheon59/twistdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/maxmccutcheon59/twistdiff/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
 
